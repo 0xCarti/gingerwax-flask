@@ -1,0 +1,24 @@
+[
+    {
+      "id": 1,
+      "name": "bse_art.jpg",
+      "price": 5.00,
+      "image": "bse_art.jpg",
+      "description": "Artwork for the BSE."
+    },
+    {
+      "id": 2,
+      "name": "garlicfingers.png",
+      "price": 0.00,
+      "image": "garlicfingers.png",
+      "description": "Grab some delicious garlic fingers with your sandwhich!"
+    },
+    {
+      "id": 3,
+      "name": "gingerwax_radio.png",
+      "price": 0.00,
+      "image": "gingerwax_radio.png",
+      "description": "Listen to the radio today!"
+    }
+  ]
+  

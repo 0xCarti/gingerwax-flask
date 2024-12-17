@@ -116,35 +116,29 @@
 <body>
     <div class="navbar">
         <ul>
-            <!-- Update navigation links using url_for to match your route names -->
             <li><a href="{{ url_for('mmmm') }}">M.M.M.M</a></li>
             <li><a href="https://open.spotify.com/playlist/2QrWTuvhQHVXOLOLux2WjE" target="_blank">RADIO</a></li>
-            <li><a href="{{ url_for('store') }}">STORE</a></li>
+            <li><a href="#shop">STORE</a></li>
+            <li><a href="{{ url_for('cart') }}">CART</a></li>
         </ul>
     </div>
     <div class="store-container" id="shop">
+        {% for product in products %}
         <div class="product">
-            <img src="https://via.placeholder.com/200" alt="Product Image">
-            <h2>Product 1</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <button>Add to Cart</button>
+            <img src="{{ url_for('static', filename='images/' ~ product.image) }}" alt="{{ product.name }} Image">
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.description }}</p>
+            <p>Price: ${{ product.price }}</p>
+            <form action="{{ url_for('add_to_cart') }}" method="post">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="product_name" value="{{ product.name }}">
+                <input type="hidden" name="product_price" value="{{ product.price }}">
+                <button type="submit">Add to Cart</button>
+            </form>
         </div>
-        <div class="product">
-            <img src="https://via.placeholder.com/200" alt="Product Image">
-            <h2>Product 2</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <button>Add to Cart</button>
-        </div>
-        <div class="product">
-            <img src="https://via.placeholder.com/200" alt="Product Image">
-            <h2>Product 3</h2>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-            <button>Add to Cart</button>
-        </div>
-        <!-- Add more products as needed -->
+        {% endfor %}
     </div>
     <footer class="footer">
-        <!-- Change link to point back to the index route -->
         <a href="{{ url_for('index') }}">
             <p>&copy; 2024 GINGERWAX MEDIA INC., All rights reserved.</p>
         </a>
