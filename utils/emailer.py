@@ -1,3 +1,6 @@
+from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import os
 import smtplib
@@ -48,11 +51,32 @@ def send_order_confirmation_email(order_details):
 
     send_email(subject, body, order_details['payer_email'], EMAIL_USER)
 
-def send_email(subject, body, to_email, from_email):
-    msg = MIMEText(body)
+def send_digital_order_email(order_details, attachment_path):
+    subject = f"Your Digital Order: {order_details['paypal_order_id']}"
+    body = "Thank you for your purchase. Please find your digital goods attached."
+    send_email(subject, body, order_details['payer_email'], EMAIL_USER, attachment_path)
+
+def send_email(subject, body, to_email, from_email, attachment_path=None):
+    # Use MIMEMultipart to support attachments
+    msg = MIMEMultipart()
     msg['Subject'] = subject
     msg['From'] = from_email
     msg['To'] = to_email
+
+    # Attach the email body
+    msg.attach(MIMEText(body, 'plain'))
+
+    # Attach the file if provided
+    if attachment_path:
+        with open(attachment_path, 'rb') as attachment_file:
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(attachment_file.read())
+            encoders.encode_base64(part)
+            part.add_header(
+                'Content-Disposition',
+                f'attachment; filename="{os.path.basename(attachment_path)}"',
+            )
+            msg.attach(part)
 
     # Send the email via SMTP
     with smtplib.SMTP(EMAIL_HOST, EMAIL_PORT) as server:

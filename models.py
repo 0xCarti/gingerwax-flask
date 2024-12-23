@@ -19,10 +19,11 @@ class Product(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     full_image_link = db.Column(db.String(200), nullable=True)
-    stock = db.Column(db.Integer, nullable=True, default=0)  # Optional stock
+    stock = db.Column(db.Integer, nullable=True, default=0)
     short_description = db.Column(db.String(255), nullable=False)
     long_description = db.Column(db.Text, nullable=True)
     discontinued = db.Column(db.Boolean, default=False)
+    type = db.Column(db.String(20), nullable=False)  # Add product type field
 
     def is_unlimited_stock(self):
         return self.stock == -1

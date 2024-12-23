@@ -1,15 +1,23 @@
 
+import os
 from flask import Blueprint, app
 from flask import flash, request, render_template, redirect, url_for
-from flask_login import login_required, login_user, logout_user
+from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from app import login_manager
 from models import db, User
+import random
+import string
+from utils.emailer import send_email
 
 user_bp = Blueprint('user', __name__)
 
 login_manager.login_view = 'user.login'  # Redirect to this route if not logged in
 login_manager.login_message = "Please log in to access this page."
+
+# Helper function to generate a random password
+def generate_random_password(length=8):
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=length))
 
 @user_bp.route('/admin/users')
 @login_required
@@ -69,7 +77,7 @@ def login():
 def logout():
     logout_user()
     flash("You have been logged out.", "info")
-    return redirect(url_for('login'))
+    return redirect(url_for('user.login'))
 
 
 # Route for adding users
@@ -96,3 +104,48 @@ def register():
         return redirect(url_for('register'))
 
     return render_template('register.html')
+
+@user_bp.route('/profile', methods=['GET', 'POST'])
+@login_required
+def profile():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        user = current_user
+
+        if not check_password_hash(user.password_hash, current_password):
+            flash("Current password is incorrect.", "danger")
+        elif new_password != confirm_password:
+            flash("New passwords do not match.", "danger")
+        else:
+            user.password_hash = generate_password_hash(new_password, method='sha256')
+            db.session.commit()
+            flash("Password updated successfully.", "success")
+
+    orders = current_user.orders
+    return render_template('profile.html', user=current_user, orders=orders)
+
+@user_bp.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+
+        if user:
+            # Generate a new password
+            new_password = generate_random_password()
+            user.password_hash = generate_password_hash(new_password)
+            db.session.commit()
+
+            # Send the new password via email
+            subject = "Password Reset for Your Account"
+            body = f"Your new password is: {new_password}\nPlease log in and change it immediately."
+            send_email(subject, body, to_email=email, from_email=os.environ.get('EMAIL_USER'))
+
+            flash("A new password has been sent to your email.", "success")
+        else:
+            flash("No account found with that email address.", "danger")
+
+    return render_template('forgot_password.html')

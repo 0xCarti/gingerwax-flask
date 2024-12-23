@@ -23,13 +23,13 @@ def add_to_cart():
     product_id = request.form.get('product_id')
     if not product_id:
         flash("Product ID is missing.", "danger")
-        return redirect(url_for('store.store'))
+        return redirect(url_for('shop.store'))
 
     # Fetch product from the database
     product = Product.query.get(product_id)
     if not product or product.discontinued:
         flash("Product is not available.", "danger")
-        return redirect(url_for('store.store'))
+        return redirect(url_for('shop.store'))
 
     quantity = int(request.form.get('quantity', 1))  # Default quantity to 1
 
@@ -43,10 +43,10 @@ def add_to_cart():
             item['quantity'] += quantity
             session.modified = True
             flash(f"Updated {product.name} quantity in cart.", "success")
-            return redirect(url_for('store.store'))
+            return redirect(url_for('shop.store'))
 
     session['cart'].append({
-        "product_id": product.id,  # Always include product_id
+        "id": product.id,  # Always include product_id
         "name": product.name,
         "price": product.price,
         "image_min": product.full_image_link.replace('_full', '_min') if '_full' in product.full_image_link else product.full_image_link,
@@ -54,7 +54,7 @@ def add_to_cart():
     })
     session.modified = True
     flash(f"{product.name} added to cart.", "success")
-    return redirect(url_for('store.store'))
+    return redirect(url_for('shop.store'))
 
 
 @cart_bp.route('/cart')

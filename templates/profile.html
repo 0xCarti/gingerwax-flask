@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>User Profile</h2>
+<p>Email: {{ user.email }}</p>
+
+<h3>Your Orders</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>${{ order.total_amount }}</td>
+            <td>{{ 'Completed' if order.completed else 'Pending' }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Change Password</h3>
+<form method="POST" action="{{ url_for('user.profile') }}">
+    <div class="form-group">
+        <label for="current_password">Current Password:</label>
+        <input type="password" name="current_password" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="new_password">New Password:</label>
+        <input type="password" name="new_password" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label for="confirm_password">Confirm New Password:</label>
+        <input type="password" name="confirm_password" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Password</button>
+</form>
+{% endblock %}

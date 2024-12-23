@@ -1,19 +1,20 @@
 from email.mime.text import MIMEText
+import os
 
 import requests
-from flask import Blueprint, jsonify, session, request
+from flask import Blueprint, current_app, jsonify, session, request, url_for
 from flask_login import current_user
 
 from app import db, csrf
 from models import Order, OrderItem, Product
 from routes.shop_routes import PAYPAL_CLIENT_ID, PAYPAL_SECRET
-from utils.emailer import send_order_confirmation_email
+from utils.emailer import send_digital_order_email, send_order_confirmation_email, send_order_notification_email
 
 # Set your PayPal credentials as environment variables or here directly
-PAYPAL_OAUTH_URL = "https://api-m.paypal.com/v1/oauth2/token"
-PAYPAL_ORDERS_URL = "https://api-m.paypal.com/v2/checkout/orders"
-#PAYPAL_OAUTH_URL = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
-#PAYPAL_ORDERS_URL = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
+#PAYPAL_OAUTH_URL = "https://api-m.paypal.com/v1/oauth2/token"
+#PAYPAL_ORDERS_URL = "https://api-m.paypal.com/v2/checkout/orders"
+PAYPAL_OAUTH_URL = "https://api-m.sandbox.paypal.com/v1/oauth2/token"
+PAYPAL_ORDERS_URL = "https://api-m.sandbox.paypal.com/v2/checkout/orders"
 
 transaction_bp = Blueprint('transaction', __name__)
 
@@ -96,6 +97,7 @@ def capture_order():
         cart = session.get('cart', [])
         if not cart:
             return jsonify({"error": "Cart is empty"}), 400
+        
 
         total_amount = sum(item['price'] * item.get('quantity', 1) for item in cart)
 
@@ -119,16 +121,19 @@ def capture_order():
 
         # Add items to the OrderItem table and reduce stock
         for item in cart:
-            if 'product_id' not in item:
+            if 'id' not in item:
+                print(f"Invalid cart item: {item}")
                 return jsonify({"error": f"Invalid cart item: {item}"}), 400
 
             # Find the product in the database
-            product = Product.query.get(item['product_id'])
+            product = Product.query.get(item['id'])
             if not product:
-                return jsonify({"error": f"Product not found for ID {item['product_id']}"}), 400
+                print(f"Product not found for ID {item['id']}")
+                return jsonify({"error": f"Product not found for ID {item['id']}"}), 400
 
             # Check if the product has sufficient stock
             if not product.is_unlimited_stock() and product.stock < item.get('quantity', 1):
+                print(f'Insufficient stock for product {product.name}')
                 return jsonify({"error": f"Insufficient stock for product {product.name}"}), 400
 
             # Reduce stock if applicable
@@ -161,12 +166,18 @@ def capture_order():
             ],
             "payer_email": new_order.customer_email
         }
-
-        try:
-            send_order_confirmation_email(order_details)
-            print("Order confirmation email sent successfully.")
-        except Exception as e:
-            print(f"Error sending order confirmation email: {e}")
+        
+        for item in cart:
+            product = Product.query.get(item['id'])
+            if product.type == "Physical":
+                send_order_notification_email(order_details)
+            elif product.type == "Digital":
+                # Generate the absolute file system path
+                image_path = os.path.join(current_app.root_path, 'static', 'images', os.path.basename(product.full_image_link))
+                if os.path.exists(image_path):
+                    send_digital_order_email(order_details, image_path)
+                else:
+                    raise FileNotFoundError(f"Digital goods file not found: {image_path}")
 
         return jsonify(order_data)
 

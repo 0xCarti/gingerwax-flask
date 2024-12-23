@@ -44,15 +44,15 @@ def edit_product(product_id):
             unique_filename = generate_unique_filename(file.filename)
             base_name, ext = os.path.splitext(unique_filename)
 
-            full_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{base_name}_full{ext}")
+            full_path = os.path.join(UPLOAD_FOLDER, f"{base_name}_full{ext}")
             file.save(full_path)
 
-            shop_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{base_name}_shop{ext}")
+            shop_path = os.path.join(UPLOAD_FOLDER, f"{base_name}_shop{ext}")
             with Image.open(full_path) as img:
                 img = img.resize((200, 200), Image.Resampling.LANCZOS)
                 img.save(shop_path)
 
-            min_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{base_name}_min{ext}")
+            min_path = os.path.join(UPLOAD_FOLDER, f"{base_name}_min{ext}")
             with Image.open(full_path) as img:
                 img.save(min_path, optimize=True, quality=20)
 
@@ -60,7 +60,7 @@ def edit_product(product_id):
 
         db.session.commit()
         flash(f"Product '{product.name}' updated successfully.", "success")
-        return redirect(url_for('admin.admin_products'))
+        return redirect(url_for('product.admin_products'))
 
     return render_template('edit_product.html', product=product)
 
@@ -72,6 +72,7 @@ def add_product():
         price = float(request.form.get('price'))
         short_description = request.form.get('short_description')
         long_description = request.form.get('long_description')
+        product_type = request.form.get('type')
 
         stock_input = request.form.get('stock')
         stock = int(stock_input) if stock_input else None  # Allow empty stock field
@@ -83,16 +84,16 @@ def add_product():
             base_name, ext = os.path.splitext(unique_filename)
 
             # Save original as "filename_full"
-            full_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{base_name}_full{ext}")
+            full_path = os.path.join(UPLOAD_FOLDER, f"{base_name}_full{ext}")
             file.save(full_path)
 
             # Resize and save other versions
-            shop_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{base_name}_shop{ext}")
+            shop_path = os.path.join(UPLOAD_FOLDER, f"{base_name}_shop{ext}")
             with Image.open(full_path) as img:
                 img = img.resize((200, 200), Image.Resampling.LANCZOS)
                 img.save(shop_path)
 
-            min_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{base_name}_min{ext}")
+            min_path = os.path.join(UPLOAD_FOLDER, f"{base_name}_min{ext}")
             with Image.open(full_path) as img:
                 img.save(min_path, optimize=True, quality=20)
 
@@ -100,7 +101,7 @@ def add_product():
             full_image_link = f"{base_name}_full{ext}"
         else:
             flash("Invalid image file. Please upload a valid PNG, JPG, AVIF, or WEBP image.", "danger")
-            return redirect(url_for('admin.add_product'))
+            return redirect(url_for('product.add_product'))
 
         # Create and save the new product
         new_product = Product(
@@ -109,12 +110,13 @@ def add_product():
             short_description=short_description,
             long_description=long_description,
             stock=stock,
+            type=product_type,
             full_image_link=full_image_link
         )
         db.session.add(new_product)
         db.session.commit()
         flash(f"Product '{name}' added successfully.", "success")
-        return redirect(url_for('admin.admin_products'))
+        return redirect(url_for('product.admin_products'))
 
     return render_template('add_product.html')
 
@@ -155,4 +157,4 @@ def discontinue_product(product_id):
         flash(f"Product '{product.short_description}' marked as discontinued.", "success")
     else:
         flash("Product not found.", "danger")
-    return redirect(url_for('admin.admin_products'))
+    return redirect(url_for('product.admin_products'))
