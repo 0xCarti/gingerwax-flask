@@ -1,7 +1,7 @@
 import os
 import uuid
 
-from PIL import Image
+from PIL import Image # type: ignore
 from flask import Blueprint, app, render_template, flash, redirect, url_for, request
 from flask_login import login_required
 

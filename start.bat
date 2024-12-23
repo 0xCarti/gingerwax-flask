@@ -7,7 +7,7 @@ set FLASK_APP=app.py
 set FLASK_ENV=development
 
 REM Start the Flask app
-flask run
+flask run --debug
 
 REM Pause to keep the console open after the app stops
 pause

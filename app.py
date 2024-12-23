@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask import render_template
 from flask_login import LoginManager
-from flask_migrate import Migrate
+from flask_migrate import Migrate # type: ignore
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash
 

@@ -171,6 +171,7 @@ def capture_order():
             product = Product.query.get(item['id'])
             if product.type == "Physical":
                 send_order_notification_email(order_details)
+                send_order_confirmation_email(order_details)
             elif product.type == "Digital":
                 # Generate the absolute file system path
                 image_path = os.path.join(current_app.root_path, 'static', 'images', os.path.basename(product.full_image_link))
