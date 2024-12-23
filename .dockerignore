@@ -1,0 +1,17 @@
+# Exclude Python cache
+__pycache__/
+utils/__pycache__/
+routes/__pycache__
+
+# Exclude Git files
+.git/
+.gitignore
+
+# Exclude database
+instance/
+
+# Exclude environment files
+.env
+
+# Exclude documentation files
+README.md
