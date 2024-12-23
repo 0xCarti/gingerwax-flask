@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Gingerwax</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link 
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap" 
+        rel="stylesheet"
+    >
+    <!-- Use url_for to link stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <!-- Link to the store page with #shop anchor -->
+            <li><a href="{{ url_for('store.store') }}#shop">STORE</a></li>
+            <li><a href="{{ url_for('mmmm') }}">M.M.M.M</a></li>
+            <li><a href="https://open.spotify.com/playlist/2QrWTuvhQHVXOLOLux2WjE" target="_blank">RADIO</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="about">
+            <!-- Link GINGERWAX back to the index page -->
+            <h1><a href="{{ url_for('index') }}">GINGERWAX</a></h1>
+            <p>In a world of eternal shadows, the kingdom of Gingerwax festered, ruled by the three apostoles: <i>Everett, Jameson and Kane</i>.
+                <br><br>Into this forsaken land wandered a solitary traveler, a figure cloaked in mystery and resolve, seeking passage through the infernal dominion.
+                Gingerwax was a landscape of despair, where Sloth and Wrath intertwined. Inhabitants languished in lethargy, eyes hollow, lives stagnant, while streets ran with the blood of senseless violence. Children starved of hope, their laughter buried beneath the weight of indifference and rage.<br><br>
+                In the swamps, Lust clung to the air, mixing with the toxic greed that infested the forests. Figures emerged from the mists, their touch cold and insistent, while others scrabbled over shimmering jewels, blind to the decay setting in around them. The traveler moved through this landscape of forbidden desires and insatiable hunger, his mission a beacon against the relentless pull of corruption.<br><br>
+                The marble palaces of Pride stood tall, masking the emptiness within, their opulence a stark contrast to the squalor of the envious valleys below. Inhabitants paraded their hollow achievements, drunk on vanity, while their envious neighbors coveted what they could never possess. The traveler saw through their façades, recognizing the brittle fragility beneath their grandiose exteriors.<br><br>
+                In the desert of Gluttony, remnants of unchecked excess littered the ground. Bloated corpses lay scattered, victims of their own insatiable appetites. The traveler, wise to the deceptive oases of false promise, pressed forward.<br><br>
+                Through Gingerwax, the traveler journeyed, a ghost among the damned. He witnessed the intertwining sins that ruled, untouched by their grasp. His passage through this hellscape revealed no redemption, no salvation—only the stark, unyielding truth that in the kingdom of the Seven Sins, the gravest transgression was hope itself.
+            </p>
+        </div>
+    </div>
+    <footer class="footer">
+        <!-- Link back to the index page -->
+        <a href="{{ url_for('index') }}">
+            <p>&copy; 2024 GINGERWAX MEDIA INC., All rights reserved.</p>
+        </a>
+    </footer>
+</body>
+</html>

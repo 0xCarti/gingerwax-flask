@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Gingerwax</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            font-family: 'Vollkorn', serif;
+            background-color: rgb(8, 8, 8);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar ul li {
+            margin: 0 10px;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: color 0.5s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: red;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .product-img {
+            flex: 1;
+            max-width: 50%;
+            margin-right: 20px;
+        }
+
+        .product-img img {
+            width: 100%;
+            border-radius: 10px;
+        }
+
+        .product-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-details h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .product-details .sku {
+            font-size: 0.9em;
+            color: #999;
+            margin-bottom: 15px;
+        }
+
+        .product-details .price {
+            font-size: 1.8em;
+            color: #ff0000;
+            margin-bottom: 15px;
+        }
+
+        .product-details .description {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .product-details form button,
+        .product-details .out-of-stock {
+            display: block;
+            width: fit-content;
+            text-align: center;
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .product-details form button:hover {
+            background: #cc0000;
+        }
+
+        .product-details .out-of-stock {
+            background: #444;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="{{ url_for('shop.store') }}">Back to Store</a></li>
+            <li><a href="{{ url_for('cart.cart') }}">View Cart</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <div class="product-img">
+            <img src="{{ url_for('static', filename='images/' + product.full_image_link.replace('_full', '_min')) }}" alt="{{ product.name }}">
+        </div>
+        <div class="product-details">
+            <h1>{{ product.name }}</h1>
+            <div class="price">${{ "%.2f"|format(product.price) }}</div>
+            <div class="description">{{ product.long_description }}</div>
+            {% if product.stock == 0 %}
+            <div class="out-of-stock">Out of Stock</div>
+            {% else %}
+            <form action="{{ url_for('cart.add_to_cart') }}" method="post">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="product_id" value="{{ product.id }}">
+                <input type="hidden" name="product_name" value="{{ product.name }}">
+                <input type="hidden" name="product_price" value="{{ product.price }}">
+                <button type="submit">Add to Cart</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

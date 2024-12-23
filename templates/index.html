@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GINGERWAX</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <!-- Use url_for to reference the static CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="video-container">
+        <video autoplay muted loop id="background-video">
+            <!-- Use url_for to reference the static video file -->
+            <source src="{{ url_for('static', filename='seasonsix0001-0250.mp4') }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <div class="navbar">
+        <ul>
+            <!-- Link to internal pages using url_for and the name of the route functions -->
+            <li><a href="{{ url_for('shop.store') }}">STORE</a></li>
+            <li><a href="{{ url_for('mmmm') }}">M.M.M.M</a></li>
+            <li><a href="https://open.spotify.com/playlist/2QrWTuvhQHVXOLOLux2WjE" target="_blank">RADIO</a></li>
+            <li><a href="{{ url_for('cart.cart') }}">CART</a></li>
+        </ul>
+    </div>
+    <footer class="footer">
+        <a href="{{ url_for('about') }}">
+            <p>&copy; 2024 GINGERWAX MEDIA INC., All rights reserved.</p>
+        </a>
+    </footer>
+</body>
+</html>

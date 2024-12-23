@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.M.M.M</title>
+    <!-- Use url_for to load the stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <!-- Convert links to use Flask's url_for function -->
+            <li><a href="{{ url_for('shop.store') }}">STORE</a></li>
+            <li><a href="{{ url_for('mmmm') }}">M.M.M.M</a></li>
+            <li><a href="https://open.spotify.com/playlist/2QrWTuvhQHVXOLOLux2WjE" target="_blank">RADIO</a></li>
+            <li><a href="{{ url_for('cart.cart') }}">CART</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="gallery-container">
+            <div class="gallery-item rectangle">
+                <img src="{{ url_for('static', filename='images/mmmm_intro_min.png') }}" alt="Placeholder Image 1">
+            </div>
+            <div class="gallery-item square">
+                <img src="{{ url_for('static', filename='images/gingerwax_radio_min.png') }}" alt="Placeholder Image 2">
+            </div>
+            <div class="gallery-item square">
+                <img src="{{ url_for('static', filename='images/gaze_gingerwax_min.png') }}" alt="Placeholder Image 3">
+            </div>
+            <div class="gallery-item square">
+                <img src="{{ url_for('static', filename='images/garlicfingers_min.png') }}" alt="Placeholder Image 4">
+            </div>
+            <div class="gallery-item square">
+                <img src="{{ url_for('static', filename='images/gaze_gingerwax_min.png') }}" alt="Placeholder Image 5">
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <!-- Update footer link to the index page -->
+        <a href="{{ url_for('index') }}">
+            <p>&copy; 2024 GINGERWAX MEDIA INC., All rights reserved.</p>
+        </a>
+    </footer>
+</body>
+</html>

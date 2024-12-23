@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Gingerwax</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Vollkorn', serif;
+            background-color: rgb(8, 8, 8);
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar ul li {
+            margin: 0 10px;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: color 0.5s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: red;
+        }
+
+        .cart-summary {
+            width: 100%;
+            text-align: center;
+            color: white;
+            margin: 20px 0;
+        }
+
+        .cart-container {
+            flex: 1;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            color: white;
+            font-size: 1em;
+            margin: 0 auto;
+            max-width: 800px;
+        }
+
+        th,
+        td {
+            padding: 15px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #333;
+            border-bottom: 2px solid #444;
+        }
+
+        td {
+            background-color: #222;
+            border-bottom: 1px solid #444;
+        }
+
+        img {
+            max-width: 75px;
+            border-radius: 5px;
+        }
+
+        .remove-btn,
+        .clear-btn {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .remove-btn:hover,
+        .clear-btn:hover {
+            background: #cc0000;
+        }
+
+        .paypal-container {
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .footer {
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="{{ url_for('mmmm') }}">M.M.M.M</a></li>
+            <li><a href="https://open.spotify.com/playlist/2QrWTuvhQHVXOLOLux2WjE" target="_blank">RADIO</a></li>
+            <li><a href="{{ url_for('shop.store') }}">STORE</a></li>
+        </ul>
+    </div>
+
+    <div class="cart-summary">
+        <h1>Your Cart</h1>
+        {% if cart %}
+        <p>Total: ${{ "%.2f"|format(total) }}</p>
+        {% else %}
+        <p>Your cart is empty.</p>
+        {% endif %}
+    </div>
+
+    <div class="cart-container">
+        {% if cart %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Item Name</th>
+                    <th>Price</th>
+                    <th>Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart %}
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='images/' + item.image_min) }}" alt="{{ item.name }} Image">
+                    </td>
+                    <td>{{ item.name }}</td>
+                    <td>${{ "%.2f"|format(item.price) }}</td>
+                    <td>
+                        <form action="{{ url_for('cart.remove_from_cart') }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="product_id" value="{{ item.id }}">
+                            <button type="submit" class="remove-btn">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+
+    {% if cart %}
+    <div class="cart-summary">
+        <form action="{{ url_for('cart.clear_cart') }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="clear-btn">Clear Cart</button>
+        </form>
+    </div>
+
+    <!-- PayPal checkout section -->
+    <div class="paypal-container">
+        <div id="paypal-button-container"></div>
+        <script
+            src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=CAD"></script>
+        <script>
+            paypal.Buttons({
+                createOrder: function (data, actions) {
+                    return fetch('/create-order', {
+                        method: 'post',
+                        headers: { 'Content-Type': 'application/json' }
+                    })
+                    .then(res => res.json())
+                    .then(orderData => orderData.orderID);
+                },
+                onApprove: function (data, actions) {
+                    return fetch('/capture-order', {
+                        method: 'post',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ orderID: data.orderID })
+                    })
+                    .then(res => res.json())
+                    .then(orderData => {
+                        alert('Transaction completed!');
+                        window.location.href = "{{ url_for('shop.store') }}";
+                    });
+                }
+            }).render('#paypal-button-container');
+        </script>
+    </div>
+    {% endif %}
+
+    <footer class="footer">
+        <a href="{{ url_for('index') }}">
+            <p>&copy; 2024 GINGERWAX MEDIA INC., All rights reserved.</p>
+        </a>
+    </footer>
+</body>
+
+</html>

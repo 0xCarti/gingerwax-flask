@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store - Gingerwax</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Vollkorn:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Vollkorn', serif;
+            background-color: rgb(8, 8, 8);
+        }
+
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            text-align: center;
+        }
+
+        .navbar ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .navbar ul li {
+            margin: 0 10px;
+        }
+
+        .navbar ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.2em;
+            transition: color 0.5s ease;
+        }
+
+        .navbar ul li a:hover {
+            color: red;
+        }
+
+        .store-container {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .product {
+            background: #333;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 10px;
+            width: 200px;
+            margin: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .product h2 {
+            font-size: 1.2em;
+            margin: 10px 0;
+        }
+
+        .product p {
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+
+        .product button {
+            background: #ff0000;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .product button:hover {
+            background: #cc0000;
+        }
+
+        .out-of-stock {
+            background: #888;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 1.2em;
+            cursor: not-allowed;
+        }
+
+        .footer {
+            width: 100%;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 0.8em;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <ul>
+            <li><a href="{{ url_for('mmmm') }}">M.M.M.M</a></li>
+            <li><a href="https://open.spotify.com/playlist/2QrWTuvhQHVXOLOLux2WjE" target="_blank">RADIO</a></li>
+            <li><a href="#shop">STORE</a></li>
+            <li><a href="{{ url_for('cart.cart') }}">CART</a></li>
+        </ul>
+    </div>
+    <div class="store-container" id="shop">
+        {% for product in products %}
+        <div class="product">
+            <a href="{{ url_for('shop.shop_item', item_id=product.id) }}">
+                <img src="{{ url_for('static', filename='images/' + product.full_image_link.replace('_full', '_shop')) }}" alt="{{ product.name }} Image">
+            </a>
+            <h2>{{ product.name }}</h2>
+            <p>{{ product.short_description[:26] }}{% if product.short_description|length > 26 %}...{% endif %}</p>
+            <p>Price: ${{ "%.2f"|format(product.price) }}</p>
+            {% if product.stock == 0 %}
+                <div class="out-of-stock">Out of Stock</div>
+            {% else %}
+                <form action="{{ url_for('cart.add_to_cart') }}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <input type="hidden" name="product_name" value="{{ product.name }}">
+                    <input type="hidden" name="product_price" value="{{ product.price }}">
+                    <input type="hidden" name="product_image" value="{{ product.full_image_link }}">
+                    <input type="hidden" name="product_image_min" value="{{ product.full_image_link.replace('_full', '_min') }}">
+                    <button type="submit">Add to Cart</button>
+                </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    <footer class="footer">
+        <a href="{{ url_for('index') }}">
+            <p>&copy; 2024 GINGERWAX MEDIA INC., All rights reserved.</p>
+        </a>
+    </footer>
+</body>
+</html>

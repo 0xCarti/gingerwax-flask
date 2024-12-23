@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Users{% endblock %}
+
+{% block content %}
+<h1>Manage Users</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.email }}</td>
+            <td>
+                {% if user.is_active %}
+                <span class="text-success">Active</span>
+                {% else %}
+                <span class="text-danger">Inactive</span>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.is_active %}
+                <form action="{{ url_for('user.deactivate_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-danger btn-sm" type="submit">Deactivate</button>
+                </form>
+                {% else %}
+                <form action="{{ url_for('user.activate_user', user_id=user.id) }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button class="btn btn-success btn-sm" type="submit">Activate</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

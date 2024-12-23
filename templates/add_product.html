@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Product{% endblock %}
+
+{% block content %}
+<h1 class="text-center my-4">Add Product</h1>
+
+<div class="form-container d-flex align-items-start">
+    <!-- Image Preview Column -->
+    <div class="image-container">
+        <img id="image-preview" src="#" alt="Image Preview" style="display:none; border: 1px solid #ddd; max-width: 100%; height: auto;">
+    </div>
+    <!-- Form Content Column -->
+    <div class="form-content">
+        <form action="{{ url_for('product.add_product') }}" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label>
+                <input type="text" name="name" id="name" class="form-control" maxlength="100" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price:</label>
+                <input type="number" name="price" id="price" class="form-control" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="short_description" class="form-label">Short Description:</label>
+                <input type="text" name="short_description" id="short_description" class="form-control" maxlength="255" required>
+            </div>
+            <div class="mb-3">
+                <label for="long_description" class="form-label">Long Description:</label>
+                <textarea name="long_description" id="long_description" class="form-control"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="stock" class="form-label">Stock (leave blank for optional, enter -1 for unlimited):</label>
+                <input type="number" name="stock" id="stock" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label for="image" class="form-label">Upload Image:</label>
+                <input type="file" name="image" id="image" class="form-control" accept=".png,.jpg,.jpeg,.webp,.avif" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Product</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px; /* Space between the image and the form */
+    }
+
+    .image-container {
+        flex: 2; /* Image takes 2/3 of the space */
+        max-width: 66.67%; /* Explicit width for consistent layout */
+    }
+
+    .form-content {
+        flex: 1; /* Form takes 1/3 of the space */
+        max-width: 33.33%; /* Explicit width for consistent layout */
+    }
+
+    #image-preview {
+        width: 100%; /* Image uses full available width */
+        height: auto; /* Maintain aspect ratio */
+        object-fit: contain; /* Prevent distortion */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const imagePreview = document.getElementById('image-preview');
+        const formContent = document.querySelector('.form-content');
+
+        function adjustImageHeight() {
+            if (formContent && imagePreview) {
+                imagePreview.style.height = `${formContent.offsetHeight}px`;
+            }
+        }
+
+        // Adjust image preview height when a file is selected
+        document.getElementById('image').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    adjustImageHeight();
+                };
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.src = '#';
+                imagePreview.style.display = 'none';
+            }
+        });
+
+        // Adjust image height dynamically on window resize
+        window.addEventListener('resize', adjustImageHeight);
+    });
+</script>
+{% endblock %}
