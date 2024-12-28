@@ -63,6 +63,11 @@ body, html {
     color: red;
 }
 
+.container h1 {
+    color: white;
+    font-size: 2em;
+}
+
 .about {
     max-width: 530px;
     width: 100%;

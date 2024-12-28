@@ -12,6 +12,7 @@ instance/
 
 # Exclude environment files
 .env
+.example.env
 
 # Exclude documentation files
 README.md

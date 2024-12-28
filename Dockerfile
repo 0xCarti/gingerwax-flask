@@ -1,6 +1,11 @@
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
+# Set environment variables for production
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    FLASK_ENV=production
+
 # Set the working directory in the container
 WORKDIR /app
 
@@ -9,18 +14,15 @@ COPY requirements.txt /app/
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir gunicorn
 
-# Copy the application code, excluding unnecessary files
-# Use a .dockerignore file to handle exclusions
+# Copy the rest of the application code
 COPY . /app
 
-# Expose the port that the Flask app will run on
+# Expose the port your Flask/Gunicorn app will run on
 EXPOSE 5000
 
-# Set environment variables for Flask
-ENV FLASK_APP=app.py
-ENV FLASK_RUN_HOST=0.0.0.0
-ENV FLASK_ENV=production
-
-# Run the Flask app
-CMD ["flask", "run"]
+# Use Gunicorn for a production server
+#  -b 0.0.0.0:5000 binds to all interfaces on port 5000
+#  -w 4 (for example) uses 4 worker processes
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]

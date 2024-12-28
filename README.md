@@ -4,7 +4,35 @@
 
 This is the official website for [Gingerwax](https://gingerwax.ca). The website encompassess art, e-commerce and storytelling. Gingerwax was founded back in 2014 by three individuals. Over the last decade the group has built art, ideas, lore, and a sense of unease...
 
+## Roadmap
 
+1. **Gingerwax Story Collection**
+
+   - Integrate some sort of story/blog platform
+
+2. **Create push notifications via email/sms**
+
+   - Setup email verification
+   - Setup sms verification
+   - Create push notification data models
+
+       - incoming order, new user register, new user activated, outgoing order, development issues
+       - item restock, new item, item sold out, item discontinued
+   - Edit user model to integrate push notifications
+   - Create route/template to view/edit push notifications per user
+   - Create a python module for notification related functions.
+
+3. **Add coupon functionality to the store**
+
+   - Create coupon models in the database
+
+      - different types of coupons (fixed price, $ discount, % discount)
+      - select items/item types to apply it to.
+      - limit to X item(s) per order
+   - Create route/template for adding/modifying a coupon.
+   - Edit cart route to implement coupons
+   - Edit cart template to re-calculate total based on coupon.
+   - Edit order routes so they capture the coupon in the order details.
 
 
 ## Environment Variables
