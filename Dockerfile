@@ -4,7 +4,8 @@ FROM python:3.11-slim
 # Set environment variables for production
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    FLASK_ENV=production
+    FLASK_ENV=production \
+    FLASK_DEBUG=0
 
 # Set the working directory in the container
 WORKDIR /app

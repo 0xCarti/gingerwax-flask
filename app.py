@@ -16,19 +16,24 @@ from routes.order_routes import order_bp
 from routes.product_routes import product_bp
 from routes.shop_routes import shop_bp
 
-load_dotenv() # Load variables from .env file
+load_dotenv()  # Load variables from .env file
 
 # Create the database directory if it doesn't exist
-DATABASE_DIR = os.getenv('DATABASE_DIR')
+DATABASE_DIR = os.getenv("DATABASE_DIR", "")
 if len(DATABASE_DIR) > 0:
     os.makedirs(DATABASE_DIR, exist_ok=True)  # Ensure the directory exists
 
 # Setup the Flask app
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET_KEY')
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(DATABASE_DIR, 'app.db')}"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.secret_key = os.environ.get("FLASK_SECRET_KEY")
+
+# Explicitly configure the environment
+app.config["ENV"] = os.getenv("FLASK_ENV", "production")
+app.config["DEBUG"] = app.config["ENV"] == "development"
+
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(DATABASE_DIR, 'app.db')}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 csrf = CSRFProtect(app) # Enable CSRF protection 
 
@@ -97,4 +102,4 @@ app.register_blueprint(order_bp)
 app.register_blueprint(product_bp)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=app.config["DEBUG"])

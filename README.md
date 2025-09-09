@@ -84,14 +84,31 @@ Start the server (Development)
   python app.py
 ```
 
+## Production Deployment
 
+The application ships with a Docker setup that is suited for production use with Gunicorn.
 
+1. Copy `.example.env` to `.env` and update the values.
+2. Build and start the stack using Docker Compose:
 
-## Deployment (with Docker)
+   ```bash
+   docker compose up --build -d
+   ```
 
-To deploy this project run
+   The app will be available on `http://localhost:5000` and runs with `FLASK_ENV=production` by default. A named volume `db_data` is created to persist the SQLite database.
+
+3. To stop the stack:
+
+   ```bash
+   docker compose down
+   ```
+
+### Using prebuilt images
+
+Every merge to the `main` branch triggers a GitHub Actions workflow that builds the Docker image and publishes it to the [GitHub Container Registry](https://ghcr.io/). You can pull and run the latest image without building locally:
 
 ```bash
-  docker run -p 5000:5000 --env-file .env gwcarti/gingerwax:latest
+docker pull ghcr.io/<your-github-username>/gingerwax-flask:latest
+docker run -p 5000:5000 --env-file .env ghcr.io/<your-github-username>/gingerwax-flask:latest
 ```
 
