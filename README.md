@@ -89,10 +89,12 @@ Start the server (Development)
 The application ships with a Docker setup that is suited for production use with Gunicorn.
 
 1. Copy `.example.env` to `.env` and update the values.
-2. Build and start the stack using Docker Compose:
+2. Pull and start the latest prebuilt image using Docker Compose:
 
    ```bash
-   docker compose up --build -d
+   export GITHUB_REPOSITORY=<owner>/<repo>
+   docker compose pull
+   docker compose up -d
    ```
 
    The app will be available on `http://localhost:5000` and runs with `FLASK_ENV=production` by default. A named volume `db_data` is created to persist the SQLite database.
@@ -108,7 +110,16 @@ The application ships with a Docker setup that is suited for production use with
 Every merge to the `main` branch triggers a GitHub Actions workflow that builds the Docker image and publishes it to the [GitHub Container Registry](https://ghcr.io/). You can pull and run the latest image without building locally:
 
 ```bash
-docker pull ghcr.io/<your-github-username>/gingerwax-flask:latest
-docker run -p 5000:5000 --env-file .env ghcr.io/<your-github-username>/gingerwax-flask:latest
+docker pull ghcr.io/<owner>/<repo>:latest
+docker run -p 5000:5000 --env-file .env ghcr.io/<owner>/<repo>:latest
+```
+
+
+The provided `docker-compose.yml` is already configured to pull from GHCR:
+
+```bash
+export GITHUB_REPOSITORY=<owner>/<repo>
+docker compose pull
+docker compose up -d
 ```
 
