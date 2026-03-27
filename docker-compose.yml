@@ -1,7 +1,8 @@
 version: '3.8'
 services:
   app:
-    build: .
+    image: ghcr.io/${GITHUB_REPOSITORY:-gingerwax/gingerwax-flask}:latest
+    pull_policy: always
     ports:
       - "5000:5000"
     env_file:
